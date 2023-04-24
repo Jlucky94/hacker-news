@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, {AxiosResponse} from "axios";
 
 export const baseUrl = "https://hacker-news.firebaseio.com/v0/"
 export const newStoriesUrl = baseUrl + "newstories.json"
@@ -12,7 +12,7 @@ export const API = {
         })
     },
     getStory: (storyId: string) => {
-        return axios.get<StoryType>(storyUrl + storyId + ".json").then(response => {
+        return axios.get<{storyId: string}, AxiosResponse<StoryType>>(storyUrl + storyId + ".json").then(response => {
             return response.data
         })
     }

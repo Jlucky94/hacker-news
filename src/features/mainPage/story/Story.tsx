@@ -1,16 +1,22 @@
-import React, {FC, useEffect, useState} from 'react';
-import {API, StoryType} from "api/api";
+import React, {FC, useEffect} from 'react';
+import {getStoryTC} from "app/appSlice";
+import {useAppDispatch, useAppSelector} from "app/store";
 
 type StoryProps = {
-    id: string
+    storyId: string
 }
-const Story: FC<StoryProps> = ({id}) => {
-    const [story, setStory] = useState<StoryType>()
-    useEffect(() => {
-    })
-    return (
-        <div>
 
+const Story: FC<StoryProps> = ({storyId}) => {
+    const story = useAppSelector(state => state.app.stories[storyId])
+    const dispatch = useAppDispatch()
+
+
+    useEffect(() => {
+        dispatch(getStoryTC({storyId}))
+    },[storyId])
+    return (
+        <div key={storyId}>
+            Hey!This is story title: {story&&story.title}
         </div>
     );
 };

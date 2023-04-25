@@ -18,8 +18,10 @@ const Comments: FC<Props> = ({kids}) => {
     //     dispatch(getItemTC({item: storyId})).then((res) => setChildren(res.payload as number[]))
     // }, [refreshComments])
     return (
-        <Container style={{marginLeft: 20}}>
+        <Container style={{width:'70%',marginLeft:0}}>
+            <Container style={{marginLeft: 20}}>
             {kids.map(commentId => <Comment key={commentId} commentId={String(commentId)}/>)}
+        </Container>
         </Container>
     );
 };

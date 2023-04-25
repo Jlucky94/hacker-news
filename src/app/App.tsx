@@ -1,16 +1,24 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import 'app/App.css';
-import {useAppDispatch} from "app/store";
-import {getStoriesIdsTC} from "app/appSlice";
+import {useAppDispatch, useAppSelector} from "app/store";
 import MainPage from "features/mainPage/MainPage";
+import {Route, Routes} from "react-router";
+import StoryPage from "features/mainPage/storyHeader/storyPage/StoryPage";
+import LoadingBar from "common/linearProgress/LoadingBar";
+import Header from "common/header/Header";
 
 const App = () => {
-    const dispatch = useAppDispatch()
+    const isLoading = useAppSelector(state => state.app.status)
 
 
     return (
         <div>
-            <MainPage/>
+            {isLoading === "loading" && <LoadingBar/>}
+            <Header/>
+            <Routes>
+                <Route path={'/'} element={<MainPage/>}/>
+                <Route path={'/story/:storyId'} element={<StoryPage/>}/>
+            </Routes>
         </div>
     );
 };

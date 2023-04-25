@@ -1,15 +1,22 @@
-import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice, isFulfilled, isPending, isRejected, PayloadAction} from "@reduxjs/toolkit";
 import {AsyncConfigType} from "app/store";
 import {API, StoryType} from "api/api";
+
+export type AppStatusType = 'idle' | 'loading' | 'succeeded' | 'failed'
+
+export const appInitialState = {
+    error: null as string | null,
+    status: 'idle' as AppStatusType,
+    storiesId: [] as number[],
+    stories: {} as StoriesType,
+
+
+}
 
 export type StoriesType = {
     [storyId: string]: StoryType
 }
-export const appInitialState = {
-    storiesId: [] as number[],
-    stories: {} as StoriesType
 
-}
 export type InitialStateType = typeof appInitialState
 
 const appSlice = createSlice({
@@ -22,6 +29,24 @@ const appSlice = createSlice({
         setStory: (state, action: PayloadAction<{ story: StoryType }>) => {
             state.stories[action.payload.story.id] = action.payload.story
         },
+    },
+    extraReducers: builder => {
+        builder
+
+            .addMatcher(isPending, state => {
+                state.status = 'loading'
+                state.error = null
+            })
+            .addMatcher(isFulfilled, (state) => {
+                state.status = 'succeeded'
+            })
+            // .addMatcher(infoFulfilled, (state, action) => {
+            //     state.infoMessage = action.payload.info.toLowerCase()
+            // })
+            .addMatcher(isRejected, (state, action) => {
+                state.error = action.payload as string
+                state.status = 'failed'
+            })
     }
 })
 
@@ -39,16 +64,15 @@ export const getStoriesIdsTC = createAsyncThunk<
             return thunkAPI.rejectWithValue(e)
         }
     })
-export const getStoryTC = createAsyncThunk<
+export const getItemTC = createAsyncThunk<
     StoryType,
-    { storyId: string },
+    { item: string },
     AsyncConfigType
 >('app/getStory',
     async (data, thunkAPI) => {
         try {
-            const story = await API.getStory(data.storyId)
-            thunkAPI.dispatch(appActions.setStory({story}))
-            return story
+            const item = await API.getItem(data.item) as StoryType
+            return item
         } catch (e) {
             return thunkAPI.rejectWithValue(e)
         }

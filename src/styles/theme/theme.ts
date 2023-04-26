@@ -10,6 +10,7 @@ export const theme = createTheme({
                     paddingLeft: "30px",
                     paddingRight: "30px",
                     height: "100%",
+                    minHeight:'400px'
                 }
             }
         }

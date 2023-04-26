@@ -1,4 +1,5 @@
-## This app is an interface for the Hacker News website (https://news.ycombinator.com/news) consisting of two pages
+## This app is an interface for the Hacker News website (https://news.ycombinator.com/news) 
+
 
 ### Run project instructions:
 

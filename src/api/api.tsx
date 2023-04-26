@@ -11,13 +11,14 @@ export const API = {
             return response.data
         })
     },
-    getItem: (item: string) => {
-        return axios.get<{ item: string }, AxiosResponse<StoryType | CommentType>>(storyUrl + item + ".json").then(response => {
+    getItem: (itemId: string) => {
+        return axios.get<{ itemId: string }, AxiosResponse<ItemType>>(storyUrl + itemId + ".json").then(response => {
             return response.data
         })
     }
 }
 
+export type ItemType = StoryType|CommentType
 
 export type StoryType = {
     by: string;

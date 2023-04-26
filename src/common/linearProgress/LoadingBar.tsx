@@ -7,7 +7,7 @@ const LoadingBar = () => {
         <Box sx={{width: '100%'}}>
             <LinearProgress/>
         </Box>
-    );
-};
+    )
+}
 
 export default LoadingBar;

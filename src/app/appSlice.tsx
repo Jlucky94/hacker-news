@@ -1,6 +1,6 @@
 import {createAsyncThunk, createSlice, isFulfilled, isPending, isRejected, PayloadAction} from "@reduxjs/toolkit";
 import {AsyncConfigType} from "app/store";
-import {API, StoryType} from "api/api";
+import {API, CommentType, ItemType, StoryType} from "api/api";
 
 export type AppStatusType = 'idle' | 'loading' | 'succeeded' | 'failed'
 
@@ -9,7 +9,7 @@ export const appInitialState = {
     status: 'idle' as AppStatusType,
     storiesId: [] as number[],
     stories: {} as StoriesType,
-
+    tempItem: {} as ItemType
 
 }
 
@@ -26,13 +26,16 @@ const appSlice = createSlice({
         setStoriesId: (state, action: PayloadAction<{ storiesIds: number[] }>) => {
             state.storiesId = action.payload.storiesIds
         },
-        setStory: (state, action: PayloadAction<{ story: StoryType }>) => {
-            state.stories[action.payload.story.id] = action.payload.story
+        setItem: (state, action: PayloadAction<{ item: ItemType }>) => {
+            state.tempItem = action.payload.item
         },
+        setStory: (state) => {
+            state.stories[state.tempItem.id] = state.tempItem as StoryType
+        },
+
     },
     extraReducers: builder => {
         builder
-
             .addMatcher(isPending, state => {
                 state.status = 'loading'
                 state.error = null
@@ -65,13 +68,14 @@ export const getStoriesIdsTC = createAsyncThunk<
         }
     })
 export const getItemTC = createAsyncThunk<
-    StoryType,
-    { item: string },
+    ItemType,
+    { itemId: string },
     AsyncConfigType
 >('app/getStory',
     async (data, thunkAPI) => {
         try {
-            const item = await API.getItem(data.item) as StoryType
+            const item = await API.getItem(data.itemId) as ItemType
+            thunkAPI.dispatch(appActions.setItem({item}))
             return item
         } catch (e) {
             return thunkAPI.rejectWithValue(e)

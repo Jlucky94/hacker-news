@@ -1,37 +1,53 @@
-import React, {FC, useEffect} from 'react';
+import React, {FC, memo, useEffect} from 'react';
 import {appActions, getItemTC} from "app/appSlice";
 import {useAppDispatch, useAppSelector} from "app/store";
-import {format} from 'date-fns';
-import {Link, Typography} from "@mui/material";
-import {StoryType} from "api/api";
+import {Typography} from "@mui/material";
+import {Link} from "react-router-dom";
+import {getDate, getTime} from "common/utils/date";
+import StoryHeaderSkeleton from "common/skeletons/StoryHeaderSkeleton";
+import {storyHeaderStyle, storyInfoStyle} from "common/styles/styles";
 
 type StoryHeaderProps = {
     storyId: string
+    index:number
 }
 
-const StoryHeader: FC<StoryHeaderProps> = ({storyId}) => {
+const StoryHeader: FC<StoryHeaderProps> = memo(({storyId,index}) => {
     const story = useAppSelector(state => state.app.stories[storyId])
+
     const dispatch = useAppDispatch()
-    const formattedDate = story && format(story.time * 1000, 'dd.MM.yyyy')
-    const formattedTime = story && format(story.time * 1000, 'HH:mm:ss')
+
+    const date = story && getDate(story.time)
+    const time = story && getTime(story.time)
+
+    const numComments = story?.kids ? story.kids.length : 0;
 
     useEffect(() => {
-        // dispatch(appActions.setStory({story}))
-        dispatch(getItemTC({item: storyId}))
-            .then((response) => dispatch(appActions.setStory({story: response.payload as StoryType})))
+        dispatch(getItemTC({itemId: storyId}))
+            .then(() => dispatch(appActions.setStory()))
     }, [storyId])
 
 
-    return story ? (
-            <div>
-                <Link href={"story/" + storyId} underline={"none"} variant={"h6"}>{story.title}</Link>
-                <Typography>Rating: {story.score}</Typography>
-                <Typography>Posted by {story.by} {formattedDate} at {formattedTime} </Typography>
-                <Typography>Comments: {story.kids ? story.kids.length : 0}</Typography>
-            </div>
-        )
-        :
-        <div>'SKELETON OR LAZY LOADING'</div>
-};
+    return (
+        <div style={{marginTop: "10px"}}>
+            {story ? (
+                    <>
+                        <Link to={"story/" + storyId} style={storyHeaderStyle}>
+                            {index+1}. {story.title}
+                        </Link>
+                        <Typography sx={storyInfoStyle}>
+                            {story.score > 1 ? `${story.score} points ` : `${story.score} point `}
+                            by {story.by} {date} at {time}
+                        </Typography>
+                        <Typography sx={storyInfoStyle}>
+                            {numComments} {numComments === 1 ? 'comment' : 'comments'}
+                        </Typography>
+                    </>
+                )
+                :
+                <StoryHeaderSkeleton/>}
+        </div>
+    )
+})
 
 export default StoryHeader;

@@ -15,7 +15,7 @@ const LongLink: FC<Props> = ({url}) => {
         <Link href={url} underline="none" color="gray" style={{marginLeft: 5}}>
             ({displayedUrl})
         </Link>
-    );
-};
+    )
+}
 
 export default LongLink;

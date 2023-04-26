@@ -1,16 +1,15 @@
 import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from "react-router";
-import {useAppDispatch, useAppSelector} from "app/store";
-import {Button, Container, Link, Paper, Typography} from "@mui/material";
-import {appActions, getItemTC} from "app/appSlice";
-import {format} from "date-fns";
-import {StoryType} from "api/api";
+import {useParams} from "react-router";
+import {useAppDispatch, useAppSelector} from "redux/store";
+import {Box, Container, Paper, Typography} from "@mui/material";
+import {appActions, getItemTC} from "redux/appSlice";
 import Comments from "features/mainPage/storyPage/comments/Comments";
 import LongLink from "common/longLink/LongLink";
 import StoryPageSkeleton from "common/skeletons/StoryPageSkeleton";
-import {storyInfoStyle} from "common/styles/styles";
+import {commentsCountStyle, storyInfoStyle} from "styles/styles";
 import {getDate, getTime} from "common/utils/date";
 import ColorButton from "common/colorButton/ColorButton";
+import classes from 'features/mainPage/storyPage/StoryPage.module.css'
 
 const StoryPage = () => {
     const dispatch = useAppDispatch()
@@ -27,23 +26,19 @@ const StoryPage = () => {
     const date = story && getDate(story.time)
     const time = story && getTime(story.time)
 
+    const numComments = story?.descendants ? story.descendants : 0;
+
     useEffect(() => {
         dispatch(getItemTC({itemId: storyId}))
             .then(() => dispatch(appActions.setStory()))
     }, [storyId, refreshComments])
 
     return (
-        <Container maxWidth={"xl"} style={{display: "flex", flexDirection: "column",}}>
-            <Paper style={{
-                backgroundColor: "#82828214",
-                paddingTop: "15px",
-                paddingLeft: "30px",
-                paddingRight: "30px",
-                height: "100%"
-            }}>
+        <Container maxWidth={"xl"} className={classes.container}>
+            <Paper>
                 {story ?
                     (<>
-                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                        <Box style={{display: "flex", justifyContent: "space-between"}}>
                             <Typography variant={"h6"}>
                                 {story.title}
                                 <Typography component={"span"}>
@@ -53,14 +48,16 @@ const StoryPage = () => {
                             <ColorButton size={"small"} onClick={onClickRefreshComments}>
                                 Refresh comments
                             </ColorButton>
-                        </div>
+                        </Box>
 
                         <Typography sx={storyInfoStyle}>Posted
                             by {story.by} {date} at {time} </Typography>
 
-                        <Typography>{story.descendants} comments</Typography>
+                        <Typography sx={commentsCountStyle}>
+                            {numComments} {numComments === 1 ? 'comment' : 'comments'}
+                        </Typography>
 
-                        {story.kids && <Comments kids={story.kids}/>}
+                        {story.kids && <Comments refreshComments={refreshComments} kids={story.kids}/>}
                     </>)
                     :
                     <StoryPageSkeleton/>}

@@ -1,7 +1,3 @@
-
-
-
-
 export const storyHeaderStyle = {
     textDecoration: "none",
     color: "black",
@@ -13,8 +9,6 @@ export const storyInfoStyle = {
     fontSize: '9pt',
     fontFamily: "Verdana, Geneva, sans-serif"
 }
-
-
 
 
 export const commentAuthorStyle = {
@@ -31,5 +25,9 @@ export const commentDateStyle = {
 export const commentBodyStyle = {
     lineHeight: 1,
     fontSize: "0.8rem",
+    fontFamily: "Verdana, Geneva, sans-serif",
+}
+export const commentsCountStyle = {
+    fontSize: "0.7rem",
     fontFamily: "Verdana, Geneva, sans-serif",
 }

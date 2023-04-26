@@ -1,7 +1,7 @@
 import React from 'react';
 import {Button, ButtonProps, styled} from "@mui/material";
 
-const ColorButton = styled(Button)<ButtonProps>(({ theme }) => ({
+const ColorButton = styled(Button)<ButtonProps>(() => ({
     color: "#ffffff",
     textTransform: 'none',
     backgroundColor: "#ff6600",

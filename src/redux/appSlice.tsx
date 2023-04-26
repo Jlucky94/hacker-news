@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice, isFulfilled, isPending, isRejected, PayloadAction} from "@reduxjs/toolkit";
-import {AsyncConfigType} from "app/store";
+import {AsyncConfigType} from "redux/store";
 import {API, CommentType, ItemType, StoryType} from "api/api";
 
 export type AppStatusType = 'idle' | 'loading' | 'succeeded' | 'failed'
@@ -9,12 +9,16 @@ export const appInitialState = {
     status: 'idle' as AppStatusType,
     storiesId: [] as number[],
     stories: {} as StoriesType,
+    comments: {} as CommentsType,
     tempItem: {} as ItemType
 
 }
 
 export type StoriesType = {
     [storyId: string]: StoryType
+}
+export type CommentsType = {
+    [commentId: string]: CommentType
 }
 
 export type InitialStateType = typeof appInitialState
@@ -31,6 +35,9 @@ const appSlice = createSlice({
         },
         setStory: (state) => {
             state.stories[state.tempItem.id] = state.tempItem as StoryType
+        },
+        setComment: (state) => {
+            state.comments[state.tempItem.id] = state.tempItem as CommentType
         },
 
     },

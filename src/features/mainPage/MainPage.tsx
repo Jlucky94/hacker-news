@@ -1,16 +1,18 @@
 import React, {useCallback, useEffect} from 'react';
-import {useAppDispatch, useAppSelector} from "app/store";
-import {getStoriesIdsTC} from "app/appSlice";
-import {Button, Container, Paper, Typography} from "@mui/material";
+import {useAppDispatch, useAppSelector} from "redux/store";
+import {getStoriesIdsTC} from "redux/appSlice";
+import {Box, Container, Paper, Typography} from "@mui/material";
 import StoryHeader from "features/mainPage/storyHeader/StoryHeader";
 import ColorButton from "common/colorButton/ColorButton";
+import classes from './MainPage.module.css'
+import MainPageSkeleton from "common/skeletons/MainPageSkeleton";
 
 const MainPage = () => {
     const dispatch = useAppDispatch()
 
     const storiesIds = useAppSelector(state => state.app.storiesId).slice(0, 100)
 
-    const onClickManualUpdate = useCallback(() => {
+    const onClickUpdateStories = useCallback(() => {
         dispatch(getStoriesIdsTC())
     }, [dispatch])
 
@@ -28,25 +30,22 @@ const MainPage = () => {
 
     return (
         <Container maxWidth={"xl"}>
-            <Paper style={{
-                backgroundColor: "#82828214",
-                paddingTop: "15px",
-                paddingLeft: "30px",
-                paddingRight: "30px",
-                height: "100%"
-            }}>
-                <div style={{display: "flex", justifyContent: "space-between"}}>
+            {storiesIds.length>0?<Paper>
+                <Box className={classes.header}>
                     <Typography variant={'h5'}>
                         Latest 100 news
                     </Typography>
-                    <ColorButton onClick={onClickManualUpdate}>
+                    <ColorButton onClick={onClickUpdateStories}>
                         Refresh news
                     </ColorButton>
-                </div>
+                </Box>
                 <hr/>
                 {storiesIds.map((storyId, i) =>
                     <StoryHeader key={storyId} storyId={String(storyId)} index={i}/>)}
             </Paper>
+            :
+                <MainPageSkeleton/>
+            }
         </Container>
     )
 }

@@ -9,7 +9,7 @@ const LongLink: FC<Props> = ({url}) => {
     // const maxLength = 30;
     // const displayedUrl = url.length > maxLength ? `${url.substring(0, maxLength)}...` : url;
 
-    const displayedUrl = new URL(url).hostname;
+    const displayedUrl = url&& new URL(url).hostname;
 
     return (
         <Link href={url} underline="none" color="gray" style={{marginLeft: 5}}>

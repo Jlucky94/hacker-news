@@ -1,55 +1,65 @@
-import React, {FC, useEffect, useState} from 'react';
-import {useAppDispatch} from "app/store";
-import {getItemTC} from "app/appSlice";
-import {CommentType} from "api/api";
-import {Button, Container, Typography} from "@mui/material";
+import React, {FC, memo, useEffect, useState} from 'react';
+import {useAppDispatch, useAppSelector} from "redux/store";
+import {appActions, getItemTC} from "redux/appSlice";
+import {Box, Button, Container, Typography} from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import {formatDistance} from "date-fns";
-import classes from "features/mainPage/storyPage/comments/comment/Comment.module.css"
 import CommentSkeleton from "common/skeletons/CommentSkeleton";
-import {commentAuthorStyle, commentBodyStyle, commentDateStyle} from "common/styles/styles";
+import {commentAuthorStyle, commentBodyStyle, commentDateStyle} from "styles/styles";
+import {getTimeAgo} from "common/utils/date";
 
 type CommentProps = {
     commentId: string
+    refreshComments: boolean
 
 }
 
 
-const Comment: FC<CommentProps> = ({commentId}) => {
+const Comment: FC<CommentProps> = memo(({commentId, refreshComments}) => {
     const dispatch = useAppDispatch()
-    const [commentData, setCommentData] = useState<CommentType>()
+    const comment = useAppSelector(state => state.app.comments[commentId])
     const [showKids, setShowKids] = useState(false)
 
-    const timeAgo = commentData && formatDistance(commentData.time * 1000, new Date(), {addSuffix: true})
+    const timeAgo = comment && getTimeAgo(comment.time)
     const onClickHandleKids = () => setShowKids(!showKids)
 
-    useEffect(() => {
-        dispatch(getItemTC({itemId: commentId})).then((res) => setCommentData(res.payload as CommentType))
-    }, [])
 
+    useEffect(() => {
+        dispatch(getItemTC({itemId: commentId}))
+            .then(() => dispatch(appActions.setComment()))
+    }, [refreshComments])
+
+    if (comment?.deleted) {
+        return null
+    }
     return (
         <Container style={{paddingLeft: 0, marginBottom: '15px'}}>
-            {commentData ?
+            {comment ?
                 (<>
                     <Typography>
                         <Typography sx={commentAuthorStyle} component={'span'}>
-                            {commentData.by}
+                            {comment.by}
                         </Typography>
-                        <Typography component={'span'}  sx={commentDateStyle}>{timeAgo}</Typography>
+                        <Typography sx={commentDateStyle} component={'span'}>
+                            {timeAgo}
+                        </Typography>
                     </Typography>
 
-                    <Typography sx={commentBodyStyle} dangerouslySetInnerHTML={{__html: commentData.text}}/>
-                    {commentData.kids &&
-                        <Container style={{display: "flex", alignItems: "center"}}>
+                    <Typography sx={commentBodyStyle} dangerouslySetInnerHTML={{__html: comment.text}}/>
+                    {comment.kids &&
+                        <Box style={{display: "flex", alignItems: "center"}}>
                             <ExpandMoreIcon sx={{cursor: 'pointer'}} onClick={onClickHandleKids} color={"inherit"}/>
-                            <Button size={'small'} style={{textTransform: 'none',color:'black'}}
-                                    onClick={onClickHandleKids}>{showKids ? " Hide" : commentData.kids.length + " Replies"}
+                            <Button
+                                size={'small'}
+                                style={{textTransform: 'none', color: 'black'}}
+                                onClick={onClickHandleKids}>
+                                {showKids ? " Hide" : (comment.kids.length + (comment.kids.length === 1 ? ' reply' : ' replies'))}
                             </Button>
-                        </Container>
+                        </Box>
                     }
                     <Container style={{marginLeft: 20}}>
-                        {commentData.kids && showKids && commentData.kids
-                            .map(commentId => <Comment key={commentId} commentId={String(commentId)}/>)}
+                        {comment.kids && showKids && comment.kids
+                            .map(commentId => <Comment refreshComments={refreshComments} key={commentId}
+                                                       commentId={String(commentId)}/>)}
                     </Container>
                 </>)
                 :
@@ -57,6 +67,6 @@ const Comment: FC<CommentProps> = ({commentId}) => {
             }
         </Container>
     )
-}
+})
 
 export default Comment;

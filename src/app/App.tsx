@@ -1,6 +1,5 @@
 import React from 'react';
-import 'app/App.css';
-import {useAppDispatch, useAppSelector} from "app/store";
+import {useAppSelector} from "redux/store";
 import MainPage from "features/mainPage/MainPage";
 import {Route, Routes} from "react-router";
 import StoryPage from "features/mainPage/storyPage/StoryPage";

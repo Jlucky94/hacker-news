@@ -18,7 +18,7 @@ export const API = {
     }
 }
 
-export type ItemType = StoryType|CommentType
+export type ItemType = StoryType | CommentType
 
 export type StoryType = {
     by: string;
@@ -30,6 +30,7 @@ export type StoryType = {
     title: string;
     type: string;
     url: string;
+    deleted?: boolean
 }
 export type CommentType = {
     by: string;
@@ -39,4 +40,5 @@ export type CommentType = {
     text: string;
     time: number;
     type: string;
+    deleted?: boolean
 }

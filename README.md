@@ -6,7 +6,7 @@
 1. Clone the repository to your local machine.(https://github.com/Jlucky94/hacker-news.git)
 2. Install the dependencies by running **npm install** or **yarn add**.
 3. Start the development server by running **npm start** or **yarn start**.
-4. Open the browser and navigate to http://localhost:3000.
+4. Open the browser and navigate to http://localhost:3000/#/.
 
 ### Live demo of the project:
 
